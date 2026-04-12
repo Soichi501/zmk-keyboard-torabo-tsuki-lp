@@ -24,7 +24,7 @@
 &none      &kp Q      &kp L               &kp U           &kp COMMA         &kp PERIOD                                 &kp F      &kp W              &kp R            &kp Y                &kp P      &none
 &none      &kp E      &mt LEFT_CONTROL I  &mt LEFT_ALT A  &mt LEFT_SHIFT O  &kp MINUS    &mkp LCLK        &mkp RCLK    &kp K      &mt RIGHT_SHIFT T  &mt RIGHT_ALT N  &mt RIGHT_CONTROL S  &kp H      &none
 &none      &kp Z      &kp X               &kp C           &kp V             &kp B        &kp SPACE        &kp RET      &kp G      &kp D              &kp M            &kp J                &kp B      &none
-&kp LCTRL  &kp LCTRL  &kp LGUI            &none           &kp LEFT_GUI      &lt 3 ENTER  &lt 1 BACKSPACE  &lt 2 SPACE  &lt 4 TAB  &none              &none            &none                &kp RCTRL  &kp RCTRL
+&kp LCTRL  &kp LCTRL  &kp P               &kp I           &kp LEFT_GUI      &lt 3 ENTER  &lt 1 BACKSPACE  &lt 2 SPACE  &lt 4 TAB  &none              &none            &none                &kp RCTRL  &kp RCTRL
             >;
         };
 
