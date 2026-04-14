@@ -35,7 +35,7 @@
 &none      &none      &none               &none           &none             &none                                      &none      &none              &none            &none                &none      &none
 &none      &kp Q      &kp L               &kp U           &kp COMMA         &kp PERIOD                                 &kp F      &kp W              &kp R            &kp Y                &kp P      &none
 &none      &kp E      &mt LEFT_CONTROL I  &mt LEFT_ALT A  &mt LEFT_SHIFT O  &kp MINUS    &mkp LCLK        &mkp RCLK    &kp K      &mt RIGHT_SHIFT T  &mt RIGHT_ALT N  &mt RIGHT_CONTROL S  &kp H      &none
-&none      &kp Z      &kp X               &kp C           &kp V             &kp B        &kp SPACE        &kp RET      &kp G      &kp D              &kp M            &kp J                &kp B      &none
+&none      &kp Z      &kp X               &kp C           &kp V             &none        &kp SPACE        &kp RET      &kp G      &kp D              &kp M            &kp J                &kp B      &none
 &kp LCTRL  &kp LCTRL  &kp P               &kp I           &kp LEFT_GUI      &lt 3 ENTER  &lt 1 BACKSPACE  &lt 2 SPACE  &lt 4 TAB  &none              &none            &none                &kp RCTRL  &kp RCTRL
             >;
         };
@@ -52,11 +52,11 @@
 
         layer_2 {
             bindings = <
-&trans  &trans                &trans                &trans             &trans                 &trans                         &trans  &trans          &trans             &trans           &trans  &trans
-&trans  &kp AT_SIGN           &kp LEFT_BRACKET      &kp DOUBLE_QUOTES  &kp RIGHT_BRACKET      &none                          &none   &kp ESCAPE      &kp UP_ARROW       &kp CAPSLOCK     &none   &trans
-&trans  &kp HASH              &kp LEFT_PARENTHESIS  &kp SQT            &kp RIGHT_PARENTHESIS  &kp AMPERSAND  &trans  &trans  &none   &kp LEFT_ARROW  &kp DOWN_ARROW     &kp RIGHT_ARROW  &none   &trans
-&trans  &kp NON_US_BACKSLASH  &kp LEFT_BRACE        &kp GRAVE          &kp RIGHT_BRACE        &kp PIPE       &trans  &trans  &none   &kp K_MUTE      &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &none   &trans
-&trans  &trans                &trans                &trans             &trans                 &trans         &trans  &trans  &none   &none           &trans             &trans           &trans  &trans
+&trans  &trans                &trans                &trans             &trans                 &trans                         &trans  &trans          &trans             &trans            &trans  &trans
+&trans  &kp AT_SIGN           &kp LEFT_BRACKET      &kp DOUBLE_QUOTES  &kp RIGHT_BRACKET      &none                          &none   &kp ESCAPE      &kp UP_ARROW       &kp LS(CAPSLOCK)  &none   &trans
+&trans  &kp HASH              &kp LEFT_PARENTHESIS  &kp SQT            &kp RIGHT_PARENTHESIS  &kp AMPERSAND  &trans  &trans  &none   &kp LEFT_ARROW  &kp DOWN_ARROW     &kp RIGHT_ARROW   &none   &trans
+&trans  &kp NON_US_BACKSLASH  &kp LEFT_BRACE        &kp GRAVE          &kp RIGHT_BRACE        &kp PIPE       &trans  &trans  &none   &kp K_MUTE      &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &none   &trans
+&trans  &trans                &trans                &trans             &trans                 &trans         &trans  &trans  &none   &none           &trans             &trans            &trans  &trans
             >;
         };
 
