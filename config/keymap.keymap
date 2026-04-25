@@ -18,14 +18,14 @@
     };
 
     behaviors {
-        new_behavior: new_behavior {
+        holdtap_behavior: holdtap_behavior {
             compatible = "zmk,behavior-hold-tap";
-            label = "NEW_BEHAVIOR";
+            label = "HOLDTAP_BEHAVIOR";
             bindings = <&mt>, <&mt>;
 
             #binding-cells = <2>;
-            tapping-term-ms = <500>;
-            flavor = "balanced";
+            tapping-term-ms = <700>;
+            flavor = "tap-preferred";
         };
     };
 
