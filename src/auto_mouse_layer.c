@@ -16,6 +16,9 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 // オートマウスレイヤーとして使用するレイヤー番号
 #define AUTO_MOUSE_LAYER 4
 
+// スクロールレイヤー番号（このレイヤーがアクティブな間はオートマウスレイヤーを維持する）
+#define SCROLL_LAYER 5
+
 // トラックボール操作後、何も入力がない場合に元レイヤーへ戻るまでの時間 (ms)
 #define AUTO_MOUSE_TIMEOUT_MS 1000
 
@@ -57,6 +60,13 @@ static int position_state_changed_listener(const zmk_event_t *eh) {
     }
 
     if (auto_mouse_active) {
+        // スクロールレイヤーがアクティブな間（&mo 5 を押している間）は
+        // オートマウスレイヤーを解除しない
+        if (zmk_keymap_layer_active(SCROLL_LAYER)) {
+            LOG_DBG("Scroll layer active - keeping auto mouse layer");
+            return ZMK_EV_EVENT_BUBBLE;
+        }
+
         LOG_DBG("Key pressed - deactivating auto mouse layer immediately");
         k_work_cancel_delayable(&auto_mouse_deactivate_work);
         zmk_keymap_layer_deactivate(AUTO_MOUSE_LAYER);
@@ -70,8 +80,8 @@ ZMK_LISTENER(auto_mouse_position, position_state_changed_listener);
 ZMK_SUBSCRIPTION(auto_mouse_position, zmk_position_state_changed);
 
 static int auto_mouse_layer_init(void) {
-    LOG_INF("Auto mouse layer initialized (layer=%d, timeout=%dms)",
-            AUTO_MOUSE_LAYER, AUTO_MOUSE_TIMEOUT_MS);
+    LOG_INF("Auto mouse layer initialized (layer=%d, scroll_layer=%d, timeout=%dms)",
+            AUTO_MOUSE_LAYER, SCROLL_LAYER, AUTO_MOUSE_TIMEOUT_MS);
     k_work_init_delayable(&auto_mouse_deactivate_work, deactivate_auto_mouse_layer);
     return 0;
 }
