@@ -16,14 +16,29 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 // オートマウスレイヤーとして使用するレイヤー番号
 #define AUTO_MOUSE_LAYER 4
 
-// スクロールレイヤー番号（このレイヤーがアクティブな間はオートマウスレイヤーを維持する）
-#define SCROLL_LAYER 5
-
 // トラックボール操作後、何も入力がない場合に元レイヤーへ戻るまでの時間 (ms)
 #define AUTO_MOUSE_TIMEOUT_MS 1000
 
+// オートマウスレイヤー中に押してもレイヤーを解除しないキーのposition番号
+// （マウスボタン類とスクロールレイヤーキー）
+// keymapのlayer_4で割り当てているキーのpositionを列挙する
+// position 28: &mo 5  (スクロールレイヤー)
+// position 33: &mkp LCLK
+// position 34: &mkp MCLK
+// position 35: &mkp RCLK
+static const uint32_t mouse_layer_positions[] = {28, 33, 34, 35};
+
 static struct k_work_delayable auto_mouse_deactivate_work;
 static bool auto_mouse_active = false;
+
+static bool is_mouse_layer_position(uint32_t position) {
+    for (int i = 0; i < ARRAY_SIZE(mouse_layer_positions); i++) {
+        if (mouse_layer_positions[i] == position) {
+            return true;
+        }
+    }
+    return false;
+}
 
 static void deactivate_auto_mouse_layer(struct k_work *work) {
     if (auto_mouse_active) {
@@ -60,14 +75,14 @@ static int position_state_changed_listener(const zmk_event_t *eh) {
     }
 
     if (auto_mouse_active) {
-        // スクロールレイヤーがアクティブな間（&mo 5 を押している間）は
-        // オートマウスレイヤーを解除しない
-        if (zmk_keymap_layer_active(SCROLL_LAYER)) {
-            LOG_DBG("Scroll layer active - keeping auto mouse layer");
+        // マウスボタン・スクロールキーのpositionはホワイトリストに登録済み
+        // これらのキーではオートマウスレイヤーを解除しない
+        if (is_mouse_layer_position(ev->position)) {
+            LOG_DBG("Mouse layer key at position %d - keeping auto mouse layer", ev->position);
             return ZMK_EV_EVENT_BUBBLE;
         }
 
-        LOG_DBG("Key pressed - deactivating auto mouse layer immediately");
+        LOG_DBG("Key pressed at position %d - deactivating auto mouse layer", ev->position);
         k_work_cancel_delayable(&auto_mouse_deactivate_work);
         zmk_keymap_layer_deactivate(AUTO_MOUSE_LAYER);
         auto_mouse_active = false;
@@ -80,8 +95,8 @@ ZMK_LISTENER(auto_mouse_position, position_state_changed_listener);
 ZMK_SUBSCRIPTION(auto_mouse_position, zmk_position_state_changed);
 
 static int auto_mouse_layer_init(void) {
-    LOG_INF("Auto mouse layer initialized (layer=%d, scroll_layer=%d, timeout=%dms)",
-            AUTO_MOUSE_LAYER, SCROLL_LAYER, AUTO_MOUSE_TIMEOUT_MS);
+    LOG_INF("Auto mouse layer initialized (layer=%d, timeout=%dms)",
+            AUTO_MOUSE_LAYER, AUTO_MOUSE_TIMEOUT_MS);
     k_work_init_delayable(&auto_mouse_deactivate_work, deactivate_auto_mouse_layer);
     return 0;
 }
