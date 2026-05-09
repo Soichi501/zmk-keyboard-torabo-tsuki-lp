@@ -4,7 +4,49 @@
 
 &mt { flavor = "balanced"; };
 
+// =============================================
+// JIS配列用キーコード定義
+// =============================================
+#define JP_AT      LEFT_BRACKET        // @
+#define JP_LBKT    RIGHT_BRACKET       // [
+#define JP_RBKT    NON_US_HASH         // ]
+#define JP_LBRC    LS(RIGHT_BRACKET)   // {
+#define JP_RBRC    LS(NON_US_HASH)     // }
+#define JP_CARET   EQUAL               // ^
+#define JP_PLUS    LS(SEMI)            // +  ※COLONはJISで+になるのでLS(SEMI)が正しい
+#define JP_COLON   SQT                 // :
+#define JP_ASTER   LS(SQT)             // *
+#define JP_DQUOTE  LS(NUMBER_2)        // "
+#define JP_SQUOTE  SQT                 // '  ※SQTはJISで:になるため注意→実際は LS(NUMBER_7)
+#define JP_UNDER   LS(INT_RO)          // _  動作確認済み
+#define JP_BSLASH  NON_US_BACKSLASH    // (バックスラッシュ)
+#define JP_PIPE    LS(NON_US_BACKSLASH) // |
+#define JP_YEN     INT_YEN             // ¥
+
 / {
+    behaviors {
+        holdtap_behavior: holdtap_behavior {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOLDTAP_BEHAVIOR";
+            bindings = <&mt>, <&mt>;
+            #binding-cells = <2>;
+            tapping-term-ms = <700>;
+            flavor = "balanced";
+        };
+
+        // ~を単体キーとして定義
+        // WindowsのJIS配列ではShift+^(=Shift+EQUAL)で~が出る
+        // mod-morphでShiftを保持したまま送信する
+        jis_tilde: jis_tilde {
+            compatible = "zmk,behavior-mod-morph";
+            label = "JIS_TILDE";
+            #binding-cells = <0>;
+            bindings = <&kp LS(EQUAL)>, <&kp LS(EQUAL)>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+            keep-mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+    };
+
     combos {
         compatible = "zmk,combos";
 
@@ -16,18 +58,6 @@
         eigo {
             bindings = <&kp LANG2>;
             key-positions = <14 15>;
-        };
-    };
-
-    behaviors {
-        holdtap_behavior: holdtap_behavior {
-            compatible = "zmk,behavior-hold-tap";
-            label = "HOLDTAP_BEHAVIOR";
-            bindings = <&mt>, <&mt>;
-
-            #binding-cells = <2>;
-            tapping-term-ms = <700>;
-            flavor = "balanced";
         };
     };
 
@@ -44,23 +74,25 @@
             >;
         };
 
+        // layer_1: 数字・記号レイヤー（JIS配列対応）
         layer_1 {
             bindings = <
-&trans  &trans         &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans             &trans         &trans
-&trans  &kp LS(EQUAL)  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
-&trans  &kp NUMBER_0   &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp EQUAL       &kp COLON        &kp MINUS     &kp DOUBLE_QUOTES  &kp SLASH      &trans
-&trans  &kp DOLLAR     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp LS(INT_RO)  &kp EXCLAMATION  &kp QUESTION  &kp SINGLE_QUOTE   &kp SEMICOLON  &trans
-&trans  &trans         &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans             &trans         &trans
+&trans  &trans       &trans        &trans        &trans        &trans                  &trans  &trans           &trans          &trans           &trans         &trans
+&trans  &jis_tilde   &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans  &kp LESS_THAN    &kp JP_CARET    &kp GREATER_THAN &kp PERCENT    &trans
+&trans  &kp NUMBER_0 &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &trans  &kp JP_PLUS      &kp MINUS       &kp JP_ASTER     &kp SLASH      &trans
+&trans  &kp DOLLAR   &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp JP_UNDER  &kp EXCLAMATION  &kp QUESTION  &kp JP_COLON  &kp SEMICOLON  &trans
+&trans  &trans       &trans        &trans        &trans        &trans  &trans  &trans  &trans  &trans           &trans          &trans           &trans         &trans
             >;
         };
 
+        // layer_2: 括弧・記号レイヤー（JIS配列対応）
         layer_2 {
             bindings = <
-&trans  &trans                &trans             &trans          &trans                &trans                                    &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp LEFT_BRACKET      &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                                    &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
-&trans  &kp HASH              &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET                 &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp NON_US_BACKSLASH  &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp LS(NON_US_BACKSLASH)  &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
-&trans  &trans                &trans             &trans          &trans                &trans                    &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &trans        &trans       &trans          &trans        &trans                    &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp JP_AT     &kp JP_LBKT  &kp JP_DQUOTE   &kp JP_RBKT   &trans                    &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
+&trans  &kp HASH      &kp JP_LBRC  &kp AMPERSAND   &kp JP_RBRC   &kp JP_CARET  &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp JP_BSLASH &kp JP_YEN   &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS  &kp JP_PIPE  &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &trans  &trans
+&trans  &trans        &trans       &trans          &trans        &trans        &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
             >;
         };
 
