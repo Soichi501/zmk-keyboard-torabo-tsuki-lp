@@ -46,21 +46,21 @@
 
         layer_1 {
             bindings = <
-&trans  &trans        &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans            &trans         &trans
-&trans  &kp TILDE     &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN  &kp PERCENT    &trans
-&trans  &kp NUMBER_0  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp LCTRL       &kp PLUS         &kp MINUS     &kp ASTERISK      &kp SLASH      &trans
-&trans  &kp DOLLAR    &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp UNDERSCORE  &kp EXCLAMATION  &kp QUESTION  &kp COLON         &kp SEMICOLON  &trans
-&trans  &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans            &trans         &trans
+&trans  &trans        &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans             &trans         &trans
+&trans  &kp PLUS      &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
+&trans  &kp NUMBER_0  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp EQUAL       &kp COLON        &kp MINUS     &kp DOUBLE_QUOTES  &kp SLASH      &trans
+&trans  &kp DOLLAR    &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp UNDERSCORE  &kp EXCLAMATION  &kp QUESTION  &kp SINGLE_QUOTE   &kp SEMICOLON  &trans
+&trans  &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans             &trans         &trans
             >;
         };
 
         layer_2 {
             bindings = <
-&trans  &trans                &trans                &trans             &trans                 &trans                         &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp AT_SIGN           &kp LEFT_BRACKET      &kp DOUBLE_QUOTES  &kp RIGHT_BRACKET      &trans                         &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
-&trans  &kp HASH              &kp LEFT_PARENTHESIS  &kp SQT            &kp RIGHT_PARENTHESIS  &kp AMPERSAND  &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp NON_US_BACKSLASH  &kp LEFT_BRACE        &kp GRAVE          &kp RIGHT_BRACE        &kp PIPE       &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
-&trans  &trans                &trans                &trans             &trans                 &trans         &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &trans                &trans             &trans          &trans                &trans                                    &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp LEFT_BRACKET      &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                                    &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
+&trans  &kp HASH              &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET                 &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp NON_US_BACKSLASH  &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp LS(NON_US_BACKSLASH)  &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
+&trans  &trans                &trans             &trans          &trans                &trans                    &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
             >;
         };
 
