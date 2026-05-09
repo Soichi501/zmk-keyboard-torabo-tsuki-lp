@@ -9,13 +9,13 @@
         compatible = "zmk,combos";
 
         hiragana {
-            bindings = <&kp LANGUAGE_1>;
+            bindings = <&kp LANG1>;
             key-positions = <20 21>;
         };
 
-        eisuu {
-            bindings = <&kp LANGUAGE_2>;
-            key-positions = <15 14>;
+        eigo {
+            bindings = <&kp LANG2>;
+            key-positions = <14 15>;
         };
     };
 
@@ -39,7 +39,7 @@
 &none  &none  &none               &none           &none             &none                                      &none      &none              &none            &none                &none  &none
 &none  &kp Q  &kp L               &kp U           &kp COMMA         &kp PERIOD                                 &kp F      &kp W              &kp R            &kp Y                &kp P  &none
 &none  &kp E  &mt LEFT_CONTROL I  &mt LEFT_ALT A  &mt LEFT_SHIFT O  &kp MINUS    &none            &none        &kp K      &mt RIGHT_SHIFT T  &mt RIGHT_ALT N  &mt RIGHT_CONTROL S  &kp H  &none
-&none  &kp Z  &kp X               &kp C           &kp V             &none        &none            &none        &kp G      &kp D              &kp M            &kp J                &kp B  &none
+&none  &kp Z  &kp X               &kp C           &kp V             &none        &kp LANG2        &kp LANG1    &kp G      &kp D              &kp M            &kp J                &kp B  &none
 &none  &none  &none               &none           &kp LEFT_GUI      &lt 5 ENTER  &lt 1 BACKSPACE  &lt 3 SPACE  &lt 2 TAB  &none              &none            &none                &none  &none
             >;
         };
