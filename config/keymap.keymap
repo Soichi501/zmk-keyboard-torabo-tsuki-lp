@@ -29,6 +29,17 @@
             tapping-term-ms = <700>;
             flavor = "balanced";
         };
+
+        // ~を単体キーとして定義（mod-morph）
+        // WindowsのJIS配列: Shift+^(EQUAL) → ~
+        jis_tilde: jis_tilde {
+            compatible = "zmk,behavior-mod-morph";
+            label = "JIS_TILDE";
+            #binding-cells = <0>;
+            bindings = <&kp LS(EQUAL)>, <&kp LS(EQUAL)>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+            keep-mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
     };
 
     keymap {
@@ -47,7 +58,7 @@
         layer_1 {
             bindings = <
 &trans  &trans        &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans             &trans         &trans
-&trans  &kp X         &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
+&trans  &jis_tilde    &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
 &trans  &kp NUMBER_0  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp EQUAL       &kp COLON        &kp MINUS     &kp DOUBLE_QUOTES  &kp SLASH      &trans
 &trans  &kp DOLLAR    &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp LS(INT_RO)  &kp EXCLAMATION  &kp QUESTION  &kp SINGLE_QUOTE   &kp SEMICOLON  &trans
 &trans  &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans             &trans         &trans
@@ -56,11 +67,11 @@
 
         layer_2 {
             bindings = <
-&trans  &trans            &trans             &trans          &trans                &trans                     &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                     &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
-&trans  &kp HASH          &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET  &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp X             &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp Y      &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
-&trans  &trans            &trans             &trans          &trans                &trans     &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &trans                   &trans             &trans          &trans                &trans                       &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp LEFT_BRACKET         &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                       &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
+&trans  &kp HASH                 &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET    &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &kp NON_US_BACKSLASH     &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp LS(NON_US_BACKSLASH)  &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
+&trans  &trans                   &trans             &trans          &trans                &trans       &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
             >;
         };
 
