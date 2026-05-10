@@ -32,11 +32,13 @@
 
         // ~を単体キーとして定義（mod-morph）
         // WindowsのJIS配列: Shift+^(EQUAL) → ~
+
         jis_tilde: jis_tilde {
             compatible = "zmk,behavior-mod-morph";
             label = "JIS_TILDE";
             #binding-cells = <0>;
             bindings = <&kp LS(EQUAL)>, <&kp LS(EQUAL)>;
+
             mods = <(MOD_LSFT|MOD_RSFT)>;
             keep-mods = <(MOD_LSFT|MOD_RSFT)>;
         };
@@ -67,11 +69,11 @@
 
         layer_2 {
             bindings = <
-&trans  &trans                   &trans             &trans          &trans                &trans                       &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp LEFT_BRACKET         &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                       &trans  &kp ESC     &trans             &kp LS(CAPSLOCK)  &trans  &trans
-&trans  &kp HASH                 &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET    &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
-&trans  &kp NON_US_BACKSLASH     &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp LS(NON_US_BACKSLASH)  &trans  &trans  &trans  &kp K_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
-&trans  &trans                   &trans             &trans          &trans                &trans       &trans  &trans  &trans  &trans      &trans             &trans            &trans  &trans
+&trans  &trans            &trans             &trans          &trans                &trans                           &trans  &trans          &trans             &trans            &trans  &trans
+&trans  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                           &trans  &kp ESC         &kp UP_ARROW       &kp LS(CAPSLOCK)  &trans  &trans
+&trans  &kp HASH          &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET        &trans  &trans  &trans  &kp LEFT_ARROW  &kp DOWN_ARROW     &kp RIGHT_ARROW   &trans  &trans
+&trans  &kp INT_YEN       &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp LS(INT_YEN)  &trans  &trans  &trans  &kp K_MUTE      &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
+&trans  &trans            &trans             &trans          &trans                &trans           &trans  &trans  &trans  &trans          &trans             &trans            &trans  &trans
             >;
         };
 
