@@ -53,7 +53,7 @@
         layer_1 {
             bindings = <
 &trans  &trans         &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans             &trans         &trans
-&trans  &kp LS(0x2E)   &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
+&trans  &kp LS(0x2F)   &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
 &trans  &kp NUMBER_0   &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp EQUAL       &kp COLON        &kp MINUS     &kp DOUBLE_QUOTES  &kp SLASH      &trans
 &trans  &kp DOLLAR     &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp LS(INT_RO)  &kp EXCLAMATION  &kp QUESTION  &kp SINGLE_QUOTE   &kp SEMICOLON  &trans
 &trans  &trans         &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans             &trans         &trans
