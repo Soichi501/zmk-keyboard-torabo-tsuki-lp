@@ -5,6 +5,7 @@
 &mt { flavor = "balanced"; };
 
 // JIS配列用HIDキーコード直接指定
+
 #define JP_BSLASH 0x89          // \ (JIS ¥/バックスラッシュキー)
 #define JP_PIPE   LS(0x89)      // | (JIS Shift+¥キー)
 #define JP_TILDE  LS(EQUAL)     // ~ (JIS Shift+^)
@@ -16,11 +17,13 @@
         hiragana {
             bindings = <&kp LANG1>;
             key-positions = <20 21>;
+            layers = <0 1 2 3 4 5 6>;
         };
 
         eigo {
             bindings = <&kp LANG2>;
             key-positions = <14 15>;
+            layers = <0 1 2 3 4 5 6>;
         };
     };
 
@@ -34,7 +37,6 @@
             tapping-term-ms = <700>;
             flavor = "balanced";
         };
-
     };
 
     keymap {
@@ -53,7 +55,7 @@
         layer_1 {
             bindings = <
 &trans  &trans        &trans        &trans        &trans        &trans                  &trans          &trans           &trans        &trans             &trans         &trans
-&trans  &kp JP_TILDE  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
+&trans  &kp KP_PLUS   &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &trans                  &trans          &kp LESS_THAN    &kp UNDER     &kp GREATER_THAN   &kp PERCENT    &trans
 &trans  &kp NUMBER_0  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp EQUAL       &kp COLON        &kp MINUS     &kp DOUBLE_QUOTES  &kp SLASH      &trans
 &trans  &kp DOLLAR    &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &trans  &trans  &trans  &kp LS(INT_RO)  &kp EXCLAMATION  &kp QUESTION  &kp SINGLE_QUOTE   &kp SEMICOLON  &trans
 &trans  &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans          &trans           &trans        &trans             &trans         &trans
@@ -62,11 +64,11 @@
 
         layer_2 {
             bindings = <
-&trans  &trans            &trans             &trans          &trans                &trans                      &trans  &trans          &trans             &trans            &trans  &trans
-&trans  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                      &trans  &kp ESC         &kp UP_ARROW       &kp LS(CAPSLOCK)  &trans  &trans
-&trans  &kp HASH          &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET   &trans  &trans  &trans  &kp LEFT_ARROW  &kp DOWN_ARROW     &kp RIGHT_ARROW   &trans  &trans
-&trans  &kp JP_BSLASH     &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp JP_PIPE &trans  &trans  &trans  &kp K_MUTE      &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
-&trans  &trans            &trans             &trans          &trans                &trans      &trans  &trans  &trans  &trans          &trans             &trans            &trans  &trans
+&trans  &trans            &trans             &trans          &trans                &trans                       &trans  &trans          &trans             &trans            &trans  &trans
+&trans  &kp LEFT_BRACKET  &kp RIGHT_BRACKET  &kp AT_SIGN     &kp NON_US_HASH       &trans                       &trans  &kp ESC         &kp UP_ARROW       &kp LS(CAPSLOCK)  &trans  &trans
+&trans  &kp HASH          &kp ASTERISK       &kp AMPERSAND   &kp LEFT_PARENTHESIS  &kp CARET    &trans  &trans  &trans  &kp LEFT_ARROW  &kp DOWN_ARROW     &kp RIGHT_ARROW   &trans  &trans
+&trans  &kp JP_BSLASH     &kp RIGHT_BRACE    &kp LEFT_BRACE  &kp PIPE              &kp JP_PIPE  &trans  &trans  &trans  &kp K_MUTE      &kp C_VOLUME_DOWN  &kp C_VOLUME_UP   &trans  &trans
+&trans  &trans            &trans             &trans          &trans                &trans       &trans  &trans  &trans  &trans          &trans             &trans            &trans  &trans
             >;
         };
 
