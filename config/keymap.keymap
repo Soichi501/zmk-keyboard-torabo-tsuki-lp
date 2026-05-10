@@ -7,7 +7,7 @@
 // JIS配列用HIDキーコード直接指定
 #define JP_BSLASH 0x89          // \ (JIS ¥/バックスラッシュキー)
 #define JP_PIPE   LS(0x89)      // | (JIS Shift+¥キー)
-#define JP_TILDE  LS(0x35)      // ~ (JIS Shift+半角全角キー付近)
+#define JP_TILDE  LS(EQUAL)     // ~ (JIS Shift+^)
 
 / {
     combos {
@@ -35,15 +35,6 @@
             flavor = "balanced";
         };
 
-        jis_tilde: jis_tilde {
-            compatible = "zmk,behavior-mod-morph";
-            label = "JIS_TILDE";
-            #binding-cells = <0>;
-            bindings = <&kp LS(EQUAL)>, <&kp LS(EQUAL)>;
-
-            mods = <(MOD_LSFT|MOD_RSFT)>;
-            keep-mods = <(MOD_LSFT|MOD_RSFT)>;
-        };
     };
 
     keymap {
