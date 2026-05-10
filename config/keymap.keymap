@@ -14,16 +14,14 @@
     combos {
         compatible = "zmk,combos";
 
-        hiragana {
+        hira {
             bindings = <&kp LANG1>;
-            key-positions = <20 21>;
-            layers = <0 1 2 3 4 5 6>;
+            key-positions = <48 49>;
         };
 
-        eigo {
+        ei {
             bindings = <&kp LANG2>;
-            key-positions = <14 15>;
-            layers = <0 1 2 3 4 5 6>;
+            key-positions = <40 41>;
         };
     };
 
