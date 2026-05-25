@@ -22,6 +22,10 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 // トラックボール操作後、何も入力がない場合に元レイヤーへ戻るまでの時間 (ms)
 #define AUTO_MOUSE_TIMEOUT_MS 1000
 
+// スクロール感度の分母（大きいほど遅くなる）
+// 例: 4 なら入力値を1/4にする
+#define SCROLL_DIVISOR 4
+
 // オートマウスレイヤー中に押してもレイヤーを解除しないキーのposition番号
 // position 28: &mo 5  (スクロールレイヤー)
 // position 33: &mkp LCLK
@@ -31,6 +35,10 @@ static const uint32_t mouse_layer_positions[] = {28, 33, 34, 35};
 
 static struct k_work_delayable auto_mouse_deactivate_work;
 static bool auto_mouse_active = false;
+
+// スクロール用の端数累積バッファ
+static int scroll_x_remainder = 0;
+static int scroll_y_remainder = 0;
 
 static bool is_mouse_layer_position(uint32_t position) {
     for (int i = 0; i < ARRAY_SIZE(mouse_layer_positions); i++) {
@@ -59,26 +67,42 @@ static void activate_auto_mouse_layer(void) {
     k_work_reschedule(&auto_mouse_deactivate_work, K_MSEC(AUTO_MOUSE_TIMEOUT_MS));
 }
 
-// トラックボール入力を検知してオートマウスレイヤーの有効化、
-// またはスクロールレイヤーがアクティブな場合はスクロールイベントに変換する
 static void trackball_input_callback(struct input_event *evt) {
-    // スクロールレイヤーがアクティブな場合はスクロールイベントに変換
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
-                // X軸の動きを水平スクロールに変換
-                input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL, -evt->value, false, K_NO_WAIT);
-                // 元のイベントを抑制するため値を0に
+                // 端数を累積して感度を下げる
+                scroll_x_remainder += evt->value;
+                int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
+                scroll_x_remainder %= SCROLL_DIVISOR;
+
+                if (scroll_val != 0) {
+                    input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL,
+                                 -scroll_val, false, K_NO_WAIT);
+                }
+                // 元のXYイベントを0にしてポインタ移動を抑制
                 evt->value = 0;
+
             } else if (evt->code == INPUT_REL_Y) {
-                // Y軸の動きを垂直スクロールに変換
-                input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL, -evt->value, true, K_NO_WAIT);
-                // 元のイベントを抑制するため値を0に
+                // 端数を累積して感度を下げる
+                scroll_y_remainder += evt->value;
+                int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
+                scroll_y_remainder %= SCROLL_DIVISOR;
+
+                if (scroll_val != 0) {
+                    input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL,
+                                 -scroll_val, true, K_NO_WAIT);
+                }
+                // 元のXYイベントを0にしてポインタ移動を抑制
                 evt->value = 0;
             }
         }
         return;
     }
+
+    // スクロールレイヤーを抜けたら端数をリセット
+    scroll_x_remainder = 0;
+    scroll_y_remainder = 0;
 
     activate_auto_mouse_layer();
 }
@@ -89,14 +113,11 @@ INPUT_CALLBACK_DEFINE(DEVICE_DT_GET_OR_NULL(DT_NODELABEL(trackball)), trackball_
 static int position_state_changed_listener(const zmk_event_t *eh) {
     const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
 
-    // キーが押されたとき（離したときは無視）
     if (!ev->state) {
         return ZMK_EV_EVENT_BUBBLE;
     }
 
     if (auto_mouse_active) {
-        // マウスボタン・スクロールキーのpositionはホワイトリストに登録済み
-        // これらのキーではオートマウスレイヤーを解除しない
         if (is_mouse_layer_position(ev->position)) {
             LOG_DBG("Mouse layer key at position %d - keeping auto mouse layer", ev->position);
             return ZMK_EV_EVENT_BUBBLE;
