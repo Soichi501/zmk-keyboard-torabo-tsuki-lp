@@ -16,12 +16,13 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 // オートマウスレイヤーとして使用するレイヤー番号
 #define AUTO_MOUSE_LAYER 4
 
+// スクロールレイヤー番号
+#define SCROLL_LAYER 5
+
 // トラックボール操作後、何も入力がない場合に元レイヤーへ戻るまでの時間 (ms)
 #define AUTO_MOUSE_TIMEOUT_MS 1000
 
 // オートマウスレイヤー中に押してもレイヤーを解除しないキーのposition番号
-// （マウスボタン類とスクロールレイヤーキー）
-// keymapのlayer_4で割り当てているキーのpositionを列挙する
 // position 28: &mo 5  (スクロールレイヤー)
 // position 33: &mkp LCLK
 // position 34: &mkp MCLK
@@ -58,8 +59,27 @@ static void activate_auto_mouse_layer(void) {
     k_work_reschedule(&auto_mouse_deactivate_work, K_MSEC(AUTO_MOUSE_TIMEOUT_MS));
 }
 
-// トラックボール入力を検知してオートマウスレイヤーを有効化
+// トラックボール入力を検知してオートマウスレイヤーの有効化、
+// またはスクロールレイヤーがアクティブな場合はスクロールイベントに変換する
 static void trackball_input_callback(struct input_event *evt) {
+    // スクロールレイヤーがアクティブな場合はスクロールイベントに変換
+    if (zmk_keymap_layer_active(SCROLL_LAYER)) {
+        if (evt->type == INPUT_EV_REL) {
+            if (evt->code == INPUT_REL_X) {
+                // X軸の動きを水平スクロールに変換
+                input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL, -evt->value, false, K_NO_WAIT);
+                // 元のイベントを抑制するため値を0に
+                evt->value = 0;
+            } else if (evt->code == INPUT_REL_Y) {
+                // Y軸の動きを垂直スクロールに変換
+                input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL, -evt->value, true, K_NO_WAIT);
+                // 元のイベントを抑制するため値を0に
+                evt->value = 0;
+            }
+        }
+        return;
+    }
+
     activate_auto_mouse_layer();
 }
 
@@ -95,8 +115,8 @@ ZMK_LISTENER(auto_mouse_position, position_state_changed_listener);
 ZMK_SUBSCRIPTION(auto_mouse_position, zmk_position_state_changed);
 
 static int auto_mouse_layer_init(void) {
-    LOG_INF("Auto mouse layer initialized (layer=%d, timeout=%dms)",
-            AUTO_MOUSE_LAYER, AUTO_MOUSE_TIMEOUT_MS);
+    LOG_INF("Auto mouse layer initialized (layer=%d, scroll_layer=%d, timeout=%dms)",
+            AUTO_MOUSE_LAYER, SCROLL_LAYER, AUTO_MOUSE_TIMEOUT_MS);
     k_work_init_delayable(&auto_mouse_deactivate_work, deactivate_auto_mouse_layer);
     return 0;
 }
