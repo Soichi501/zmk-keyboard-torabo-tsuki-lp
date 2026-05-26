@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Copyright (C) 2025 sekigon-gonnoc
 
-
 #include <zephyr/sys/util_macro.h>
 
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
@@ -76,37 +75,38 @@ static void trackball_input_callback(struct input_event *evt) {
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
+                // XY値を0に上書きしてポインタ移動を抑制
                 pending_x_val = evt->value;
                 pending_x = true;
-                // ポインタ移動を抑制するためXを0に上書き
                 evt->value = 0;
             } else if (evt->code == INPUT_REL_Y) {
                 pending_y_val = evt->value;
                 pending_y = true;
-                // ポインタ移動を抑制するためYを0に上書き
                 evt->value = 0;
-            } else if (evt->code == INPUT_SYN_REPORT || evt->type == INPUT_EV_SYN) {
-                // 同期イベントのタイミングでスクロールイベントを送信
-                if (pending_x) {
-                    scroll_x_remainder += pending_x_val;
-                    int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
-                    scroll_x_remainder %= SCROLL_DIVISOR;
-                    if (scroll_val != 0) {
-                        input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL,
+            }
+        }
+
+        // sync=1のイベント（パケット末尾）でスクロールイベントを送信
+        if (evt->sync) {
+            if (pending_x) {
+                scroll_x_remainder += pending_x_val;
+                int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
+                scroll_x_remainder %= SCROLL_DIVISOR;
+                if (scroll_val != 0) {
+                    input_report_rel(evt->dev, INPUT_REL_HWHEEL,
                                      -scroll_val, false, K_NO_WAIT);
-                    }
-                    pending_x = false;
                 }
-                if (pending_y) {
-                    scroll_y_remainder += pending_y_val;
-                    int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
-                    scroll_y_remainder %= SCROLL_DIVISOR;
-                    if (scroll_val != 0) {
-                        input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL,
+                pending_x = false;
+            }
+            if (pending_y) {
+                scroll_y_remainder += pending_y_val;
+                int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
+                scroll_y_remainder %= SCROLL_DIVISOR;
+                if (scroll_val != 0) {
+                    input_report_rel(evt->dev, INPUT_REL_WHEEL,
                                      -scroll_val, true, K_NO_WAIT);
-                    }
-                    pending_y = false;
                 }
+                pending_y = false;
             }
         }
         return;
