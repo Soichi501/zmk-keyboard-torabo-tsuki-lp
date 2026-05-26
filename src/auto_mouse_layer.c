@@ -23,7 +23,6 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 #define AUTO_MOUSE_TIMEOUT_MS 1000
 
 // スクロール感度の分母（大きいほど遅くなる）
-// 例: 4 なら入力値を1/4にする
 #define SCROLL_DIVISOR 4
 
 // オートマウスレイヤー中に押してもレイヤーを解除しないキーのposition番号
@@ -39,6 +38,12 @@ static bool auto_mouse_active = false;
 // スクロール用の端数累積バッファ
 static int scroll_x_remainder = 0;
 static int scroll_y_remainder = 0;
+
+// XYイベントの受信状態
+static bool pending_x = false;
+static bool pending_y = false;
+static int pending_x_val = 0;
+static int pending_y_val = 0;
 
 static bool is_mouse_layer_position(uint32_t position) {
     for (int i = 0; i < ARRAY_SIZE(mouse_layer_positions); i++) {
@@ -63,7 +68,6 @@ static void activate_auto_mouse_layer(void) {
         zmk_keymap_layer_activate(AUTO_MOUSE_LAYER);
         auto_mouse_active = true;
     }
-    // タイムアウトをリセット
     k_work_reschedule(&auto_mouse_deactivate_work, K_MSEC(AUTO_MOUSE_TIMEOUT_MS));
 }
 
@@ -71,45 +75,53 @@ static void trackball_input_callback(struct input_event *evt) {
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
-                // 端数を累積して感度を下げる
-                scroll_x_remainder += evt->value;
-                int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
-                scroll_x_remainder %= SCROLL_DIVISOR;
-
-                if (scroll_val != 0) {
-                    input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL,
-                                 -scroll_val, false, K_NO_WAIT);
-                }
-                // 元のXYイベントを0にしてポインタ移動を抑制
+                pending_x_val = evt->value;
+                pending_x = true;
+                // ポインタ移動を抑制するためXを0に上書き
                 evt->value = 0;
-
             } else if (evt->code == INPUT_REL_Y) {
-                // 端数を累積して感度を下げる
-                scroll_y_remainder += evt->value;
-                int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
-                scroll_y_remainder %= SCROLL_DIVISOR;
-
-                if (scroll_val != 0) {
-                    input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL,
-                                 -scroll_val, true, K_NO_WAIT);
-                }
-                // 元のXYイベントを0にしてポインタ移動を抑制
+                pending_y_val = evt->value;
+                pending_y = true;
+                // ポインタ移動を抑制するためYを0に上書き
                 evt->value = 0;
+            } else if (evt->code == INPUT_SYN_REPORT || evt->type == INPUT_EV_SYN) {
+                // 同期イベントのタイミングでスクロールイベントを送信
+                if (pending_x) {
+                    scroll_x_remainder += pending_x_val;
+                    int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
+                    scroll_x_remainder %= SCROLL_DIVISOR;
+                    if (scroll_val != 0) {
+                        input_report(evt->dev, INPUT_EV_REL, INPUT_REL_HWHEEL,
+                                     -scroll_val, false, K_NO_WAIT);
+                    }
+                    pending_x = false;
+                }
+                if (pending_y) {
+                    scroll_y_remainder += pending_y_val;
+                    int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
+                    scroll_y_remainder %= SCROLL_DIVISOR;
+                    if (scroll_val != 0) {
+                        input_report(evt->dev, INPUT_EV_REL, INPUT_REL_WHEEL,
+                                     -scroll_val, true, K_NO_WAIT);
+                    }
+                    pending_y = false;
+                }
             }
         }
         return;
     }
 
-    // スクロールレイヤーを抜けたら端数をリセット
+    // スクロールレイヤーを抜けたら端数とバッファをリセット
     scroll_x_remainder = 0;
     scroll_y_remainder = 0;
+    pending_x = false;
+    pending_y = false;
 
     activate_auto_mouse_layer();
 }
 
 INPUT_CALLBACK_DEFINE(DEVICE_DT_GET_OR_NULL(DT_NODELABEL(trackball)), trackball_input_callback);
 
-// 通常キー入力を検知してオートマウスレイヤーを即座に無効化
 static int position_state_changed_listener(const zmk_event_t *eh) {
     const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
 
