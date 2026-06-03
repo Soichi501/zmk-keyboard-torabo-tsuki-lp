@@ -26,10 +26,6 @@ LOG_MODULE_REGISTER(auto_mouse_layer, CONFIG_ZMK_LOG_LEVEL);
 #define SCROLL_DIVISOR 4
 
 // オートマウスレイヤー中に押してもレイヤーを解除しないキーのposition番号
-// position 28: &mo 5  (スクロールレイヤー)
-// position 33: &mkp LCLK
-// position 34: &mkp MCLK
-// position 35: &mkp RCLK
 static const uint32_t mouse_layer_positions[] = {28, 33, 34, 35};
 
 static struct k_work_delayable auto_mouse_deactivate_work;
@@ -38,12 +34,6 @@ static bool auto_mouse_active = false;
 // スクロール用の端数累積バッファ
 static int scroll_x_remainder = 0;
 static int scroll_y_remainder = 0;
-
-// XYイベントの受信状態
-static bool pending_x = false;
-static bool pending_y = false;
-static int pending_x_val = 0;
-static int pending_y_val = 0;
 
 static bool is_mouse_layer_position(uint32_t position) {
     for (int i = 0; i < ARRAY_SIZE(mouse_layer_positions); i++) {
@@ -75,48 +65,31 @@ static void trackball_input_callback(struct input_event *evt) {
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
-                // XY値を0に上書きしてポインタ移動を抑制
-                pending_x_val = evt->value;
-                pending_x = true;
-                evt->value = 0;
-            } else if (evt->code == INPUT_REL_Y) {
-                pending_y_val = evt->value;
-                pending_y = true;
-                evt->value = 0;
-            }
-        }
-
-        // sync=1のイベント（パケット末尾）でスクロールイベントを送信
-        if (evt->sync) {
-            if (pending_x) {
-                scroll_x_remainder += pending_x_val;
+                scroll_x_remainder += evt->value;
                 int scroll_val = scroll_x_remainder / SCROLL_DIVISOR;
                 scroll_x_remainder %= SCROLL_DIVISOR;
                 if (scroll_val != 0) {
-                    input_report_rel(evt->dev, INPUT_REL_HWHEEL,
-                                     -scroll_val, false, K_NO_WAIT);
+                    input_report_rel(evt->dev, INPUT_REL_HWHEEL, -scroll_val, false, K_NO_WAIT);
                 }
-                pending_x = false;
-            }
-            if (pending_y) {
-                scroll_y_remainder += pending_y_val;
+                // input_listener.c より先に実行されるため、
+                // ここで0にすればポインタは動かない
+                evt->value = 0;
+            } else if (evt->code == INPUT_REL_Y) {
+                scroll_y_remainder += evt->value;
                 int scroll_val = scroll_y_remainder / SCROLL_DIVISOR;
                 scroll_y_remainder %= SCROLL_DIVISOR;
                 if (scroll_val != 0) {
-                    input_report_rel(evt->dev, INPUT_REL_WHEEL,
-                                     -scroll_val, true, K_NO_WAIT);
+                    input_report_rel(evt->dev, INPUT_REL_WHEEL, -scroll_val, true, K_NO_WAIT);
                 }
-                pending_y = false;
+                evt->value = 0;
             }
         }
         return;
     }
 
-    // スクロールレイヤーを抜けたら端数とバッファをリセット
+    // スクロールレイヤーを抜けたら端数をリセット
     scroll_x_remainder = 0;
     scroll_y_remainder = 0;
-    pending_x = false;
-    pending_y = false;
 
     activate_auto_mouse_layer();
 }
