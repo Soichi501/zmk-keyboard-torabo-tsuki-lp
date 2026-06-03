@@ -48,9 +48,10 @@ static void activate_auto_mouse_layer(void) {
     k_work_reschedule(&auto_mouse_deactivate_work, K_MSEC(AUTO_MOUSE_TIMEOUT_MS));
 }
 
-static void trackball_input_callback(struct input_event *evt, void *user_data) {
-    ARG_UNUSED(user_data);
-
+// "_aaa_" で始まる名前にすることでアルファベット順で先頭に配置され
+// input_listener.c のコールバックより先に実行される
+// Zephyr 3.5のINPUT_CALLBACK_DEFINE_NAMEDは(_dev, _callback, name)の3引数
+static void trackball_input_callback(struct input_event *evt) {
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
@@ -79,14 +80,11 @@ static void trackball_input_callback(struct input_event *evt, void *user_data) {
     activate_auto_mouse_layer();
 }
 
-// DEVICE_DT_GET_OR_NULL をファイルスコープの変数として定義することで
-// INPUT_CALLBACK_DEFINE_NAMED のマクロ展開エラーを回避する
-// "_aaa_" で始まる名前にすることでアルファベット順で先頭に配置され
-// input_listener.c のコールバックより先に実行される
 static const struct device *const trackball_dev =
     DEVICE_DT_GET_OR_NULL(DT_NODELABEL(trackball));
 
-INPUT_CALLBACK_DEFINE_NAMED(trackball_dev, trackball_input_callback, NULL,
+// Zephyr 3.5のシグネチャ: INPUT_CALLBACK_DEFINE_NAMED(_dev, _callback, name)
+INPUT_CALLBACK_DEFINE_NAMED(trackball_dev, trackball_input_callback,
                             _aaa_auto_mouse_trackball);
 
 static int position_state_changed_listener(const zmk_event_t *eh) {
