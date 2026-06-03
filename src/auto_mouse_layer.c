@@ -61,7 +61,9 @@ static void activate_auto_mouse_layer(void) {
     k_work_reschedule(&auto_mouse_deactivate_work, K_MSEC(AUTO_MOUSE_TIMEOUT_MS));
 }
 
-static void trackball_input_callback(struct input_event *evt) {
+static void trackball_input_callback(struct input_event *evt, void *user_data) {
+    ARG_UNUSED(user_data);
+
     if (zmk_keymap_layer_active(SCROLL_LAYER)) {
         if (evt->type == INPUT_EV_REL) {
             if (evt->code == INPUT_REL_X) {
@@ -71,8 +73,9 @@ static void trackball_input_callback(struct input_event *evt) {
                 if (scroll_val != 0) {
                     input_report_rel(evt->dev, INPUT_REL_HWHEEL, -scroll_val, false, K_NO_WAIT);
                 }
-                // input_listener.c より先に実行されるため、
-                // ここで0にすればポインタは動かない
+                // Zephyrのiterable sectionは名前順(SORT_BY_NAME)で実行される
+                // コールバック名を "_aaa_" で始めることで input_listener.c より先に実行され
+                // ここでの evt->value = 0 がポインタ移動を確実に抑制する
                 evt->value = 0;
             } else if (evt->code == INPUT_REL_Y) {
                 scroll_y_remainder += evt->value;
@@ -94,7 +97,11 @@ static void trackball_input_callback(struct input_event *evt) {
     activate_auto_mouse_layer();
 }
 
-INPUT_CALLBACK_DEFINE(DEVICE_DT_GET_OR_NULL(DT_NODELABEL(trackball)), trackball_input_callback);
+// "_aaa_" で始まる名前を使うことでアルファベット順で先頭に来るようにする
+// Zephyrのiterable sectionはSORTED_BY_NAMEのため、名前が早いほど先に実行される
+INPUT_CALLBACK_DEFINE_NAMED(DEVICE_DT_GET_OR_NULL(DT_NODELABEL(trackball)),
+                            trackball_input_callback, NULL,
+                            _aaa_auto_mouse_trackball);
 
 static int position_state_changed_listener(const zmk_event_t *eh) {
     const struct zmk_position_state_changed *ev = as_zmk_position_state_changed(eh);
