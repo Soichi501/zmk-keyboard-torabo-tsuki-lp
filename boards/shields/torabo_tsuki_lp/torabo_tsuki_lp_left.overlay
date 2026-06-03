@@ -3,5 +3,8 @@
 #include <dt-bindings/zmk/input_transform.h>
 
 &pointing_listener {
-    input-processors = <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>;
+    // XY反転の後、scroll_processorを実行する
+    // scroll_processorはSCROLL_LEYERがアクティブな時にXYを0にしてスクロールに変換する
+    input-processors = <&zip_xy_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
+                       <&scroll_processor>;
 };
