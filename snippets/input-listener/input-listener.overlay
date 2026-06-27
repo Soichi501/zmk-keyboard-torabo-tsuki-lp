@@ -1,14 +1,12 @@
 #include <dt-bindings/zmk/input_transform.h>
 
 / {
-    /* オートマウスレイヤー（layer 4）の自動有効化 */
     ib_tog_layer: ib_tog_layer {
         compatible = "zmk,input-behavior-tog-layer";
         #binding-cells = <1>;
         time-to-live-ms = <1000>;
     };
 
-    /* スクロール感度スケーラー（Y軸ホイール用） */
     ib_wheel_scaler: ib_wheel_scaler {
         compatible = "zmk,input-behavior-scaler";
         #binding-cells = <2>;
@@ -16,8 +14,6 @@
         input-code = <INPUT_REL_WHEEL>;
     };
 
-    /* 通常移動モード（layer 0〜4）
-       トラックボールを動かすとlayer 4が自動有効化される */
     tb_mmv_ibl {
         compatible = "zmk,input-behavior-listener";
         device = <&pointing_device>;
@@ -32,8 +28,6 @@
         bindings = <&ib_tog_layer 4>;
     };
 
-    /* スクロールモード（layer 5）
-       XをREL_MISCに逃がしポインタ移動を抑制、YをWHEELに変換 */
     tb_msl_ibl {
         compatible = "zmk,input-behavior-listener";
         device = <&pointing_device>;
@@ -41,7 +35,7 @@
         evt-type = <INPUT_EV_REL>;
         x-input-code = <INPUT_REL_MISC>;
         y-input-code = <INPUT_REL_WHEEL>;
-        y-invert;
+        /* y-invert を削除してスクロール方向を反転 */
         bindings = <&ib_wheel_scaler 1 4>;
     };
 };
